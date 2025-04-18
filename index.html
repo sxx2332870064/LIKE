@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>LIKE - Interactive Art</title>
-  <link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&display=swap" rel="stylesheet" />
   <style>
     * {
       margin: 0;
@@ -21,7 +21,7 @@
       height: 100vh;
       gap: 20px;
       overflow: hidden;
-      font-size: 1.4em; /* Increased text size */
+      font-size: 1.4em;
     }
     .container {
       display: flex;
@@ -49,7 +49,7 @@
       text-align: center;
     }
     video {
-      height: 80%; /* Slightly smaller to match section height */
+      height: 80%;
       aspect-ratio: 9 / 16;
       width: auto;
       border: 4px solid #fff;
@@ -88,7 +88,6 @@
       max-width: 80%;
       height: auto;
       border-radius: 20px;
-
     }
     .true-self {
       text-align: center;
@@ -105,7 +104,10 @@
   <div class="container">
     <div class="section video-box">
       <p>Press "Enter" if you like this video ♡</p>
-      <video id="video" autoplay playsinline></video>
+      <video id="video" autoplay muted playsinline>
+        <source id="videoSource" src="" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
       <p id="videoTitle">Title</p>
     </div>
 
@@ -120,38 +122,37 @@
     </div>
 
     <div class="section status-image">
-        <p>// System Update: External validation detected</p>
-        <img id="status" src="s1.jpg" alt="Character Status">
-        <p>return self === true ? "liberation" : "looping performance";</p>
-      </div>
-      
+      <p>// System Update: External validation detected</p>
+      <img id="status" src="s1.jpg" alt="Character Status" />
+      <p>return self === true ? "liberation" : "looping performance";</p>
+    </div>
   </div>
 
   <script>
     const videoElement = document.getElementById('video');
+    const videoSource = document.getElementById('videoSource');
     const likesList = document.getElementById('likes');
     const trueSelfDisplay = document.getElementById('trueSelf');
     const statusImage = document.getElementById('status');
     const videoTitle = document.getElementById('videoTitle');
 
     const videoTitles = [
-  "function PureSoul()",
-  "let confidence = 'gentle'",
-  "render(NaturalCharm)",
-  "perform('For_the_Audience')",
-  "const balance = Self / Expectation",
-  "SoftPerformer.upload()",
-  "if(Obedient) { Show(); }",
-  "FullPetMode: true"
-];
-
+      "function PureSoul()",
+      "let confidence = 'gentle'",
+      "render(NaturalCharm)",
+      "perform('For_the_Audience')",
+      "const balance = Self / Expectation",
+      "SoftPerformer.upload()",
+      "if(Obedient) { Show(); }",
+      "FullPetMode: true"
+    ];
 
     const videoCount = 8;
     const videoData = Array.from({ length: videoCount }, (_, i) => ({
-  src: `./videos/${i + 1}.mp4?t=${Date.now()}`, // adds cache-busting timestamp
-  likes: 0,
-  chance: 10
-}));
+      src: `videos/${i + 1}.mp4`,
+      likes: 0,
+      chance: 10
+    }));
 
     const trueSelfWeights = [1, 0.95, 0.85, 0.7, 0.5, 0.3, 0.15, 0];
 
@@ -172,7 +173,7 @@
       const percentage = Math.round(total);
       trueSelfDisplay.textContent = `${percentage}%`;
       const imgIndex = Math.max(1, Math.min(8, 8 - Math.floor(percentage / 12.5)));
-      statusImage.src = `s${imgIndex}.jpg`; // Changed from .png to .jpg
+      statusImage.src = `s${imgIndex}.jpg`;
     }
 
     function getRandomVideoIndex() {
@@ -188,7 +189,8 @@
 
     function playNextVideo() {
       const index = getRandomVideoIndex();
-      videoElement.src = videoData[index].src;
+      videoSource.src = `${videoData[index].src}?t=${Date.now()}`;
+      videoElement.load();
       videoElement.dataset.index = index;
       videoTitle.textContent = videoTitles[index];
       videoElement.play();
@@ -201,6 +203,10 @@
       updateLikesUI();
       updateTrueSelf();
     }
+
+    videoElement.onerror = () => {
+      console.error('Failed to load video:', videoSource.src);
+    };
 
     videoElement.addEventListener('ended', playNextVideo);
 
@@ -223,6 +229,17 @@
         updateTrueSelf();
       }
     });
+
+    // 🔊 Unmute audio after user interaction
+    document.addEventListener('click', () => {
+      videoElement.muted = false;
+      videoElement.play();
+    }, { once: true });
+
+    document.addEventListener('keydown', () => {
+      videoElement.muted = false;
+      videoElement.play();
+    }, { once: true });
 
     playNextVideo();
   </script>
